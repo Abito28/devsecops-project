@@ -1,5 +1,5 @@
 locals {
-  github_repo  = "Abito28/devsecops-project"
+  github_repo  = "Abito28@130058484/devsecops-project@1450951257"
   state_bucket = "devsecops-dev-s3"
 }
 
