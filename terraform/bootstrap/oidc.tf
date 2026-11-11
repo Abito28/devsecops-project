@@ -1,18 +1,18 @@
 locals {
-    github_repo = "Abito28/devsecops-project"
-    state_bucket = "devsecops-dev-s3"
+  github_repo  = "Abito28/devsecops-project"
+  state_bucket = "devsecops-dev-s3"
 }
 
 resource "aws_iam_openid_connect_provider" "github" {
-    url = "https://token.actions.githubusercontent.com"
-    client_id_list = ["sts.amazonaws.com"]
-    
-    tags = {
-        Name = "devsecops-dev-oidc-provider"
-        Project = "devsecops"
-        Owner = "shimizu"
-        Environment = "dev"
-    }
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
+
+  tags = {
+    Name        = "devsecops-dev-oidc-provider"
+    Project     = "devsecops"
+    Owner       = "shimizu"
+    Environment = "dev"
+  }
 }
 
 resource "aws_iam_role" "plan" {
@@ -34,7 +34,7 @@ resource "aws_iam_role" "plan" {
   })
 
   tags = {
-    Name = "devsecops-dev-role-plan"
+    Name        = "devsecops-dev-role-plan"
     Project     = "devsecops"
     Owner       = "shimizu"
     Environment = "dev"
