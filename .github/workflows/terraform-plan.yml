@@ -14,8 +14,12 @@ jobs:
         steps:
           - uses: actions/checkout@v7
           - uses: hashicorp/setup-terraform@v3
-          - name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v6
+          
+          - name: Debug OIDC claims (temporary)
+            run: |
+             TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r .value)
+             echo "$TOKEN" | python3 -c "import sys,json,base64; p=sys.stdin.read().split('.')[1]; p+='='*(-len(p)%4); d=json.loads(base64.urlsafe_b64decode(p)); print({k:d[k] for k in ('iss','aud','sub')})"- name: Configure AWS Credentials
+          - uses: aws-actions/configure-aws-credentials@v6
             with:
               role-to-assume: ${{ secrets.AWS_PLAN_ROLE_ARN }}
               aws-region: ap-northeast-1
