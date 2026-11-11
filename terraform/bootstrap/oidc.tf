@@ -15,6 +15,8 @@ resource "aws_iam_openid_connect_provider" "github" {
   }
 }
 
+#Plan role
+
 resource "aws_iam_role" "plan" {
   name = "devsecops-dev-role-github-plan"
 
@@ -56,6 +58,60 @@ resource "aws_iam_role_policy" "plan_state" {
       {
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
+        Resource = "arn:aws:s3:::${local.state_bucket}/main/terraform.tfstate"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+        Resource = "arn:aws:s3:::${local.state_bucket}/main/terraform.tfstate.tflock"
+      }
+    ]
+  })
+}
+
+#Apply role
+
+resource "aws_iam_role" "apply" {
+  name = "devsecops-dev-role-github-apply"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
+      Action    = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          "token.actions.githubusercontent.com:sub" = "repo:${local.github_repo}:ref:refs/heads/main"
+        }
+      }
+    }]
+  })
+
+  tags = {
+    Name        = "devsecops-dev-role-apply"
+    Project     = "devsecops"
+    Owner       = "shimizu"
+    Environment = "dev"
+  }
+}
+
+resource "aws_iam_role_policy" "apply_state" {
+  name = "terraform-state-access"
+  role = aws_iam_role.apply.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = "arn:aws:s3:::${local.state_bucket}"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
         Resource = "arn:aws:s3:::${local.state_bucket}/main/terraform.tfstate"
       },
       {
