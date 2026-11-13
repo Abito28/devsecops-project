@@ -3,5 +3,5 @@ locals {
 }
 
 module "network" {
-  source      = "../modules/network"
+  source = "../modules/network"
 }
