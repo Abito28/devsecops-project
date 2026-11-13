@@ -3,5 +3,6 @@ locals {
 }
 
 module "network" {
-  source = "../modules/network"
+  source      = "../modules/network"
+  name_prefix = local.name_prefix
 }
