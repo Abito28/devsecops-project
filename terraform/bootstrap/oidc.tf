@@ -111,7 +111,7 @@ resource "aws_iam_role_policy" "apply_state" {
       },
       {
         Effect   = "Allow"
-        Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+        Action   = ["s3:GetObject", "s3:PutObject"]
         Resource = "arn:aws:s3:::${local.state_bucket}/main/terraform.tfstate"
       },
       {
