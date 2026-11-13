@@ -132,3 +132,67 @@ resource "aws_iam_role_policy" "apply_state" {
     ]
   })
 }
+
+#Destroy role
+
+resource "aws_iam_role" "destroy" {
+  name = "devsecops-dev-role-github-destroy"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
+      Action    = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          "token.actions.githubusercontent.com:sub" = "repo:${local.github_repo}:ref:refs/heads/main"
+        }
+      }
+    }]
+  })
+
+  tags = {
+    Name        = "devsecops-dev-role-destroy"
+    Project     = "devsecops"
+    Owner       = "shimizu"
+    Environment = "dev"
+  }
+}
+
+resource "aws_iam_role_policy" "destroy_state" {
+  name = "terraform-state-access"
+  role = aws_iam_role.destroy.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = "arn:aws:s3:::${local.state_bucket}"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+        Resource = "arn:aws:s3:::${local.state_bucket}/main/terraform.tfstate"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+        Resource = "arn:aws:s3:::${local.state_bucket}/main/terraform.tfstate.tflock"
+      },
+      {
+        Sid      = "AllowRegionalServicesInTokyo"
+        Effect   = "Allow"
+        Action   = ["ec2:*", "ecr:*", "ecs:*", "lambda:*", "logs:*"]
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "aws:RequestedRegion" = "ap-northeast-1"
+          }
+      } }
+    ]
+  })
+}
