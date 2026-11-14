@@ -55,3 +55,4 @@ resource "aws_route_table_association" "devsecops_dev_public_rtb_assoc" {
   subnet_id      = aws_subnet.devsecops_dev_subnet_public_a.id
   route_table_id = aws_route_table.devsecops_dev_public_rtb.id
 }
+#test plan
