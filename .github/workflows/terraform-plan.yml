@@ -3,13 +3,31 @@ name: terraform-plan
 on:
   pull_request:
 
-permissions:
-  id-token: write
-  contents: read
+permissions: {} 
 
 jobs:
-  plan:
+  changes:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      terraform: ${{ steps.filter.outputs.terraform }}
+    steps:
+      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706   # v4.0.2
+        id: filter
+        with:
+          filters: |
+            terraform:
+              - 'terraform/**'
+              - '.github/workflows/terraform-*.yml'
+
+  plan:
+    needs: changes
+    if: needs.changes.outputs.terraform == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v7
       - uses: hashicorp/setup-terraform@v3
