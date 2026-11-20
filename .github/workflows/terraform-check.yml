@@ -7,7 +7,7 @@ permissions: {}
 
 jobs:
   changes:
-    name: Check for changes in Terraform files
+    name: terraform check changes
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
