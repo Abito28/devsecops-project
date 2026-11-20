@@ -36,3 +36,4 @@ def delete_memo(memo_id: int):
     if memo_id not in memos:
         raise HTTPException(status_code=404, detail="memo not found")
     del memos[memo_id]
+    #test if the new path/filter cicd works
