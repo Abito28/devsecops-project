@@ -15,3 +15,9 @@ variable "Environment-tag" {
   type        = string
   default     = "dev"
 }
+
+variable "image_tag" {
+  description = "The tag for the image"
+  type        = string
+  default     = "latest"
+}
