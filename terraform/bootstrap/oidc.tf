@@ -66,15 +66,27 @@ resource "aws_iam_role_policy" "plan_state" {
         Resource = "arn:aws:s3:::${local.state_bucket}/main/terraform.tfstate.tflock"
       },
       {
-        Sid      = "AllowRegionalServicesInTokyo"
-        Effect   = "Allow"
-        Action   = ["ec2:Describe*", "ecr:Describe*", "ecs:Describe*", "lambda:List*", "logs:Describe*"]
+        Sid    = "AllowRegionalServicesInTokyo"
+        Effect = "Allow"
+        Action = [
+          "ec2:Describe*", "ecr:Describe*", "ecr:ListTagsForResource", "ecr:GetLifecyclePolicy",
+          "ecs:Describe*", "ecs:List*",
+          "lambda:List*",
+          "logs:Describe*",
+        ]
         Resource = "*"
         Condition = {
           StringEquals = {
             "aws:RequestedRegion" = "ap-northeast-1"
           }
-      } }
+        }
+      },
+      {
+        Sid      = "AllowIamReadOnly"
+        Effect   = "Allow"
+        Action   = ["iam:Get*", "iam:List*"]
+        Resource = [local.ecs_role_arn_pattern]
+      }
     ]
   })
 }
