@@ -89,7 +89,7 @@ resource "aws_ecs_service" "devsecops_dev_ecs_service" {
   name            = "${var.name_prefix}-ecs-service"
   cluster         = aws_ecs_cluster.devsecops_dev_ecs_cluster.id
   task_definition = aws_ecs_task_definition.devsecops_dev_ecs_task_definition.arn
-  desired_count   = 0
+  desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
