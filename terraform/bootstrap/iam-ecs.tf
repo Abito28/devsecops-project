@@ -51,6 +51,7 @@ data "aws_iam_policy_document" "ecs_iam" {
       "iam:GetRole",
       "iam:ListAttachedRolePolicies",
       "iam:ListRolePolicies",
+      "iam:ListInstanceProfilesForRole",
     ]
     resources = [local.ecs_role_arn_pattern]
   }
