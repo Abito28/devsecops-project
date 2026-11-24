@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "devsecops_dev_ecs_cluster" {
 
   setting {
     name  = "containerInsights"
-    value = "disabled"
+    value = "disabled" #費用が発生するためいったん無効化
   }
 
   tags = {
@@ -50,20 +50,28 @@ resource "aws_ecs_task_definition" "devsecops_dev_ecs_task_definition" {
     }
   ])
 
+      runtime_platform {
+        operating_system_family = "LINUX"
+        cpu_architecture        = "X86_64"
+      }
+
   tags = {
     Name = "${var.name_prefix}-ecs-task-definition"
   }
 }
 resource "aws_security_group" "devsecops_dev_sg_ecs" {
-  name        = "${var.name_prefix}-ecs-sg"
+  name        = "${var.name_prefix}-sg-ecs"
   description = "Security group for ECS service"
   vpc_id      = var.vpc_id
 
-  ingress {
-    from_port   = 8000
-    to_port     = 8000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = var.ingress_cidr_blocks
+    content {
+      from_port   = 8000
+      to_port     = 8000
+      protocol    = "tcp"
+      cidr_blocks = [ingress.value]
+    }
   }
   egress {
     from_port   = 0
@@ -81,7 +89,7 @@ resource "aws_ecs_service" "devsecops_dev_ecs_service" {
   name            = "${var.name_prefix}-ecs-service"
   cluster         = aws_ecs_cluster.devsecops_dev_ecs_cluster.id
   task_definition = aws_ecs_task_definition.devsecops_dev_ecs_task_definition.arn
-  desired_count   = 1
+  desired_count   = 0
   launch_type     = "FARGATE"
 
   network_configuration {
