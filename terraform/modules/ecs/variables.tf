@@ -13,3 +13,8 @@ variable "public_subnet_id" {
 variable "image_uri" {
   type = string
 }
+
+variable "ingress_cidr_blocks" {
+  type    = list(string)
+  default = []
+}
