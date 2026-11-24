@@ -50,10 +50,10 @@ resource "aws_ecs_task_definition" "devsecops_dev_ecs_task_definition" {
     }
   ])
 
-      runtime_platform {
-        operating_system_family = "LINUX"
-        cpu_architecture        = "X86_64"
-      }
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
 
   tags = {
     Name = "${var.name_prefix}-ecs-task-definition"
