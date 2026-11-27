@@ -18,3 +18,5 @@ module "ecs" {
   public_subnet_id = module.network.public_subnet_id
   image_uri        = "${data.aws_ecr_repository.devsecops_dev_ecr_repo.repository_url}:${var.image_tag}"
 }
+
+#test checkov cicd

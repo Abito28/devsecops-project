@@ -1,4 +1,5 @@
 resource "aws_ecs_cluster" "devsecops_dev_ecs_cluster" {
+  #checkov:skip=CKV_AWS_65:container insights is disabled to avoid cost so far (11/27)
   name = "${var.name_prefix}-ecs-cluster"
 
   setting {
@@ -12,6 +13,8 @@ resource "aws_ecs_cluster" "devsecops_dev_ecs_cluster" {
 }
 
 resource "aws_cloudwatch_log_group" "ecs" {
+  #checkov:skip=CKV_AWS_338:7 days retention to limit storege cost
+  #checkov:skip=CKV_AWS_158:KMS key adds cost
   name              = "/ecs/${var.name_prefix}"
   retention_in_days = 7
 }
@@ -89,6 +92,7 @@ resource "aws_security_group" "devsecops_dev_sg_ecs" {
 }
 
 resource "aws_ecs_service" "devsecops_dev_ecs_service" {
+  #checkov:skip=CKV_AWS_333:public ip is required because NAT is not used
   name            = "${var.name_prefix}-ecs-service"
   cluster         = aws_ecs_cluster.devsecops_dev_ecs_cluster.id
   task_definition = aws_ecs_task_definition.devsecops_dev_ecs_task_definition.arn
