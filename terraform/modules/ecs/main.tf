@@ -27,9 +27,10 @@ resource "aws_ecs_task_definition" "devsecops_dev_ecs_task_definition" {
 
   container_definitions = jsonencode([
     {
-      name      = "${var.name_prefix}-container"
-      image     = var.image_uri
-      essential = true
+      name                   = "${var.name_prefix}-container"
+      image                  = var.image_uri
+      essential              = true
+      readonlyRootFilesystem = true
 
       portMappings = [
         {
@@ -67,6 +68,7 @@ resource "aws_security_group" "devsecops_dev_sg_ecs" {
   dynamic "ingress" {
     for_each = var.ingress_cidr_blocks
     content {
+      description = "App port 8000 access from allowed CIDR blocks"
       from_port   = 8000
       to_port     = 8000
       protocol    = "tcp"
@@ -74,9 +76,10 @@ resource "aws_security_group" "devsecops_dev_sg_ecs" {
     }
   }
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    description = "Allow HTTPS outbound for ECR and CloudWatch Logs"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
