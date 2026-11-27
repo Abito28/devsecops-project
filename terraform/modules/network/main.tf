@@ -1,4 +1,5 @@
 resource "aws_vpc" "devsecops_dev_vpc" {
+  #checkov:skip=CKV2_AWS_11:vpc flow logs are not allowed to avoid extra cost
   cidr_block = var.vpc_cidr
 
   tags = {
@@ -7,6 +8,7 @@ resource "aws_vpc" "devsecops_dev_vpc" {
 }
 
 resource "aws_subnet" "devsecops_dev_subnet_public_a" {
+  #checkov:skip=CKV_AWS_130:public ip is required because NAT is not used
   vpc_id     = aws_vpc.devsecops_dev_vpc.id
   cidr_block = var.public_subnet_cidr
 

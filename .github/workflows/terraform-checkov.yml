@@ -3,6 +3,8 @@ name: Terraform Checkov Scan
 on:
     pull_request:
 
+permissions: {}
+
 jobs:
   changes:
     name: terraform checkov changes
@@ -21,6 +23,7 @@ jobs:
               - '.github/workflows/terraform-*.yml'
 
   checkov:
+    name: Terraform Checkov
     needs: changes
     if: needs.changes.outputs.terraform == 'true'
     runs-on: ubuntu-latest
@@ -29,12 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
       - name: Install Checkov
-        uses: bridgecrewio/checkov-action@v12
+        uses: bridgecrewio/checkov-action@a32f8b5c5c7c958bc38947c65dfe139debaf0607 # v12.3140.0
         with:
-          directory: terraform/main
+          directory: terraform
           framework: terraform
           output_format: cli

@@ -1,4 +1,5 @@
 resource "aws_ecr_repository" "devsecops-dev-ecr-repo" {
+  #checkov:skip=CKV_AWS_136:KMS key adds cost
   name                 = "devsecops-dev-ecr-repo"
   image_tag_mutability = "IMMUTABLE"
 
