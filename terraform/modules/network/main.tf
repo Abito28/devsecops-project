@@ -55,3 +55,11 @@ resource "aws_route_table_association" "devsecops_dev_public_rtb_assoc" {
   subnet_id      = aws_subnet.devsecops_dev_subnet_public_a.id
   route_table_id = aws_route_table.devsecops_dev_public_rtb.id
 }
+
+resource "aws_default_security_group" "devsecops_dev_sg_default" {
+  vpc_id = aws_vpc.devsecops_dev_vpc.id
+
+  tags = {
+    Name = "${var.name_prefix}-sg-default"
+  }
+}
